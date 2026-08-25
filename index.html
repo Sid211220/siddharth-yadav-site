@@ -14,6 +14,11 @@
 <meta property="og:description" content="MBA '28, IIM Visakhapatnam. Contract pricing across IOCL, HPCL and ONGC tenders. Founded and exited a QSR at 2x. Seeking a strategy consulting summer internship.">
 <meta property="og:url" content="https://siddharth-yadav.vercel.app/">
 <meta property="og:site_name" content="Siddharth Yadav">
+<meta property="og:image" content="https://siddharth-yadav.vercel.app/assets/headshot.jpg">
+<meta property="og:image:width" content="744">
+<meta property="og:image:height" content="930">
+<meta property="og:image:alt" content="Siddharth Yadav">
+<meta name="twitter:image" content="https://siddharth-yadav.vercel.app/assets/headshot.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Siddharth Yadav — Strategy &amp; Consulting">
 <meta name="twitter:description" content="MBA '28, IIM Visakhapatnam. Contract pricing, unit economics, and an owner's P&amp;L.">
@@ -57,6 +62,9 @@
   --pad:clamp(1.25rem,5vw,4rem);
   --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
   --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  /* motion */
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-soft:cubic-bezier(.4,0,.2,1);
 }
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:5.5rem}
@@ -76,18 +84,31 @@ h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.15;margin:0;l
 .topline{height:3px;background:var(--ink)}
 .nav{
   position:sticky;top:0;z-index:60;
-  background:rgba(252,251,249,.92);backdrop-filter:saturate(180%) blur(12px);
-  border-bottom:1px solid var(--rule-soft);
+  background:rgba(252,251,249,.72);backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid transparent;
+  transition:background .5s var(--ease-soft),border-color .5s var(--ease-soft),box-shadow .5s var(--ease-soft);
 }
-.nav__in{display:flex;align-items:center;gap:1.5rem;height:4.25rem}
+.nav.is-stuck{
+  background:rgba(252,251,249,.86);
+  border-bottom-color:var(--rule-soft);
+  box-shadow:0 10px 30px -26px rgba(6,32,47,.7);
+}
+.nav__in{display:flex;align-items:center;gap:1.5rem;height:4.25rem;transition:height .5s var(--ease)}
+.nav.is-stuck .nav__in{height:3.5rem}
 .nav__mark{font-family:var(--serif);font-weight:700;font-size:1.05rem;letter-spacing:.02em;text-decoration:none;white-space:nowrap}
 .nav__mark span{color:var(--navy)}
 .nav__links{display:flex;gap:1.9rem;margin-left:auto;list-style:none;padding:0}
 .nav__links a{
-  text-decoration:none;font-size:.795rem;font-weight:500;letter-spacing:.085em;text-transform:uppercase;
-  color:var(--muted);padding-block:.35rem;border-bottom:1.5px solid transparent;transition:color .18s,border-color .18s;
+  position:relative;text-decoration:none;font-size:.795rem;font-weight:500;letter-spacing:.085em;text-transform:uppercase;
+  color:var(--muted);padding-block:.35rem;transition:color .32s var(--ease-soft);
 }
-.nav__links a:hover,.nav__links a.is-active{color:var(--ink);border-bottom-color:var(--navy)}
+.nav__links a::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1.5px;background:var(--navy);
+  transform:scaleX(0);transform-origin:0 50%;transition:transform .45s var(--ease);
+}
+.nav__links a:hover,.nav__links a.is-active{color:var(--ink)}
+.nav__links a:hover::after,.nav__links a.is-active::after{transform:scaleX(1)}
 .btn{
   display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;
   font-family:var(--sans);font-size:.79rem;font-weight:600;letter-spacing:.075em;text-transform:uppercase;
@@ -253,10 +274,50 @@ section{scroll-margin-top:5rem}
 .foot a{color:rgba(252,251,249,.7);text-decoration:none}
 .foot a:hover{color:var(--paper)}
 
+/* ---------- scroll progress ---------- */
+.progress{position:fixed;inset:0 0 auto 0;height:2px;z-index:90;pointer-events:none;background:transparent}
+.progress i{display:block;height:100%;background:var(--navy);transform:scaleX(0);transform-origin:0 50%;will-change:transform}
+
 /* ---------- reveal ---------- */
-.rv{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
-.rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+.rv{opacity:0;transform:translate3d(0,24px,0);filter:blur(6px);
+  transition:opacity .95s var(--ease),transform .95s var(--ease),filter .95s var(--ease)}
+.rv.in{opacity:1;transform:none;filter:blur(0)}
+
+/* masked line rise (hero) */
+.rise{display:block;overflow:hidden;padding-bottom:.16em;margin-bottom:-.06em}
+.rise>span{display:block;transform:translate3d(0,110%,0);transition:transform 1.15s var(--ease)}
+.rise.in>span{transform:none}
+
+/* portrait entrance + parallax */
+.portrait__frame{transform:scale(1.04);opacity:0;
+  transition:transform 1.2s var(--ease),opacity 1.2s var(--ease)}
+.portrait.in .portrait__frame{transform:none;opacity:1}
+.portrait img{will-change:transform}
+.portrait__cap{opacity:0;transition:opacity .9s var(--ease) .25s}
+.portrait.in .portrait__cap{opacity:1}
+
+/* metric numerals hold their box while counting */
+.metric__n{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* hover states */
+.pillar{transition:border-color .5s var(--ease)}
+.pillar:hover{border-top-color:var(--navy)}
+.card{transition:background .45s var(--ease-soft),box-shadow .45s var(--ease-soft)}
+.card:hover{box-shadow:0 18px 40px -28px rgba(6,32,47,.55)}
+.entry{transition:opacity .5s var(--ease-soft)}
+.btn{transition:background .28s var(--ease-soft),color .28s var(--ease-soft),
+  border-color .28s var(--ease-soft),transform .28s var(--ease)}
+.btn:active{transform:scale(.985)}
+.nav__mark span{transition:opacity .4s var(--ease)}
+.edu tbody tr{transition:background .4s var(--ease-soft)}
+.edu tbody tr:hover{background:rgba(26,76,124,.045)}
+.cbox a,.foot a{transition:border-color .3s var(--ease-soft),color .3s var(--ease-soft)}
+
+@media (prefers-reduced-motion:reduce){
+  .rv,.rise>span,.portrait__frame{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}
+  .progress{display:none}
+  .btn:active{transform:none}
+}
 
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:1rem;top:1rem;z-index:100;background:var(--ink);color:var(--paper);padding:.7rem 1rem}
@@ -277,6 +338,7 @@ section{scroll-margin-top:5rem}
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="topline"></div>
+<div class="progress" aria-hidden="true"><i id="pbar"></i></div>
 
 <header class="nav">
   <div class="wrap nav__in">
@@ -300,7 +362,7 @@ section{scroll-margin-top:5rem}
   <div class="wrap hero__grid">
     <div>
       <p class="hero__kicker rv"><i></i>Indian Institute of Management, Visakhapatnam &middot; MBA 2028</p>
-      <h1 class="rv">Siddharth Yadav</h1>
+      <h1 class="rise"><span>Siddharth Yadav</span></h1>
       <p class="hero__role rv">Strategy &amp; Consulting &middot; Seeking Summer Internship</p>
       <p class="hero__lede rv">
         Before business school I sat on the commercial side of the table: pricing
@@ -313,9 +375,10 @@ section{scroll-margin-top:5rem}
         <a class="btn btn--ghost" href="Siddharth_Yadav_Resume.pdf" download>Download CV</a>
       </div>
     </div>
-    <figure class="portrait rv" style="margin:0">
+    <figure class="portrait" style="margin:0">
       <div class="portrait__frame">
-        <img src="assets/headshot.jpg" alt="Portrait of Siddharth Yadav" width="620" height="775"
+        <img src="assets/headshot.jpg" alt="Siddharth Yadav" width="744" height="930"
+             fetchpriority="high" decoding="async"
              onerror="this.closest('.portrait').classList.add('no-photo')">
         <div class="portrait__mono" aria-hidden="true"><span>SY</span></div>
       </div>
@@ -329,10 +392,10 @@ section{scroll-margin-top:5rem}
   <div class="wrap band__in">
     <p class="band__head">Selected results</p>
     <ul class="metrics">
-      <li class="metric rv"><span class="metric__n">&#8377;11.5 Cr</span><span class="metric__l">Turnover reached, up 53% from &#8377;7.5 Cr, supported by contract pricing models I built</span></li>
-      <li class="metric rv"><span class="metric__n">+7.5%</span><span class="metric__l">Above the client estimate on a 47-vehicle HPCL&ndash;HRRL bid, structured on vehicle-level economics</span></li>
-      <li class="metric rv"><span class="metric__n">2&times;</span><span class="metric__l">Exit multiple on &#8377;4.5 lakh of founding capital in a two-branch QSR business</span></li>
-      <li class="metric rv"><span class="metric__n">15</span><span class="metric__l">Low-price tenders screened out pre-submission by profitability thresholds I set</span></li>
+      <li class="metric rv"><span class="metric__n" data-to="11.5" data-dec="1" data-pre="&#8377;" data-post="&nbsp;Cr">&#8377;11.5&nbsp;Cr</span><span class="metric__l">Turnover reached, up 53% from &#8377;7.5 Cr, supported by contract pricing models I built</span></li>
+      <li class="metric rv"><span class="metric__n" data-to="7.5" data-dec="1" data-pre="+" data-post="%">+7.5%</span><span class="metric__l">Above the client estimate on a 47-vehicle HPCL&ndash;HRRL bid, structured on vehicle-level economics</span></li>
+      <li class="metric rv"><span class="metric__n" data-to="2" data-dec="0" data-post="&times;">2&times;</span><span class="metric__l">Exit multiple on &#8377;4.5 lakh of founding capital in a two-branch QSR business</span></li>
+      <li class="metric rv"><span class="metric__n" data-to="15" data-dec="0">15</span><span class="metric__l">Low-price tenders screened out pre-submission by profitability thresholds I set</span></li>
     </ul>
   </div>
 </section>
@@ -615,25 +678,99 @@ section{scroll-margin-top:5rem}
 
 <script>
 (function(){
+  var slice = function(n){ return Array.prototype.slice.call(n); };
   var yr = document.getElementById('yr');
   if (yr) yr.textContent = new Date().getFullYear();
 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var rv = Array.prototype.slice.call(document.querySelectorAll('.rv'));
-  if (reduce || !('IntersectionObserver' in window)) {
-    rv.forEach(function(n){ n.classList.add('in'); });
+  var hasIO  = 'IntersectionObserver' in window;
+
+  var revealables = slice(document.querySelectorAll('.rv, .rise, .portrait'));
+  var counters    = slice(document.querySelectorAll('.metric__n[data-to]'));
+
+  /* ---- staggered reveal ------------------------------------------------ */
+  if (reduce || !hasIO) {
+    revealables.forEach(function(n){ n.classList.add('in'); });
   } else {
+    // delay each element by its position within its own section, so groups
+    // cascade rather than the whole page firing at once
+    revealables.forEach(function(n){
+      var scope = n.closest('section') || document.body;
+      var peers = slice(scope.querySelectorAll('.rv, .rise, .portrait'));
+      n.style.transitionDelay = Math.min(peers.indexOf(n), 6) * 70 + 'ms';
+    });
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(e){
-        if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        io.unobserve(e.target);
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
-    rv.forEach(function(n, i){ n.style.transitionDelay = Math.min(i % 6, 5) * 55 + 'ms'; io.observe(n); });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
+    revealables.forEach(function(n){ io.observe(n); });
   }
 
-  var links = Array.prototype.slice.call(document.querySelectorAll('.nav__links a'));
+  /* ---- count-up on the metrics band ------------------------------------ */
+  function runCount(el){
+    var to  = parseFloat(el.getAttribute('data-to'));
+    var dec = parseInt(el.getAttribute('data-dec') || '0', 10);
+    var pre = el.getAttribute('data-pre') || '';
+    var post= el.getAttribute('data-post') || '';
+    var dur = 1500, t0 = null;
+    function frame(t){
+      if (t0 === null) t0 = t;
+      var p = Math.min((t - t0) / dur, 1);
+      var eased = 1 - Math.pow(2, -10 * p);          // easeOutExpo
+      if (p === 1) eased = 1;
+      el.textContent = pre + (to * eased).toFixed(dec) + post;
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  if (!reduce && hasIO && counters.length) {
+    var cio = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (!e.isIntersecting) return;
+        runCount(e.target);
+        cio.unobserve(e.target);
+      });
+    }, { threshold: 0.6 });
+    counters.forEach(function(n){ cio.observe(n); });
+  }
+
+  /* ---- scroll: progress bar, nav condense, portrait parallax ----------- */
+  var bar     = document.getElementById('pbar');
+  var nav     = document.querySelector('.nav');
+  var portrait= document.querySelector('.portrait img');
+  var ticking = false;
+
+  function onScroll(){
+    var y = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (nav) nav.classList.toggle('is-stuck', y > 8);
+
+    if (bar){
+      var doc = document.documentElement;
+      var max = (doc.scrollHeight - window.innerHeight) || 1;
+      bar.style.transform = 'scaleX(' + Math.min(Math.max(y / max, 0), 1) + ')';
+    }
+
+    // very small counter-drift on the portrait; never enough to read as motion
+    if (portrait && !reduce && y < window.innerHeight * 1.5){
+      portrait.style.transform = 'translate3d(0,' + (y * -0.035).toFixed(2) + 'px,0)';
+    }
+    ticking = false;
+  }
+  function requestTick(){
+    if (!ticking){ ticking = true; requestAnimationFrame(onScroll); }
+  }
+  window.addEventListener('scroll', requestTick, { passive: true });
+  window.addEventListener('resize', requestTick, { passive: true });
+  onScroll();
+
+  /* ---- section scrollspy ----------------------------------------------- */
+  var links = slice(document.querySelectorAll('.nav__links a'));
   var targets = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
-  if ('IntersectionObserver' in window && targets.length) {
+  if (hasIO && targets.length) {
     var spy = new IntersectionObserver(function(entries){
       entries.forEach(function(e){
         if (!e.isIntersecting) return;
